@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id        String   @id @default(cuid())
+  name      String
+  avatar    String   @default("")
+  phone     String   @default("")
+  color     String   @default("#6366f1")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tripMembers TripMember[]
+  expenses    Expense[]
+}
+
+model Trip {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @default("")
+  destination String   @default("")
+  startDate   DateTime
+  endDate     DateTime
+  coverImage  String   @default("")
+  type        String   @default("travel") // travel | movie
+  status      String   @default("planning") // planning | confirmed | completed | cancelled
+  totalBudget Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tripMembers    TripMember[]
+  expenses       Expense[]
+  itineraryItems ItineraryItem[]
+}
+
+model TripMember {
+  id         String   @id @default(cuid())
+  tripId     String
+  memberId   String
+  status     String   @default("pending") // going | maybe | not_going | pending
+  paidAmount Int      @default(0)
+  notes      String   @default("")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([tripId, memberId])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  tripId      String
+  paidById    String
+  description String
+  amount      Int
+  category    String   @default("other") // transport | food | stay | tickets | shopping | other
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  member Member @relation(fields: [paidById], references: [id], onDelete: Cascade)
+}
+
+model ItineraryItem {
+  id          String   @id @default(cuid())
+  tripId      String
+  day         Int      @default(1)
+  time        String   @default("")
+  title       String
+  description String   @default("")
+  location    String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
