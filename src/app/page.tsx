@@ -38,9 +38,9 @@ import {
 /* ──────────────────── Constants ──────────────────── */
 
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string; bg: string }> = {
-  going: { label: 'Going', icon: <CheckCircle2 className="w-3.5 h-3.5" />, color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-  maybe: { label: 'Maybe', icon: <HelpCircle className="w-3.5 h-3.5" />, color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
-  not_going: { label: 'Not Going', icon: <XCircle className="w-3.5 h-3.5" />, color: 'text-red-700', bg: 'bg-red-50 border-red-200' },
+  going: { label: 'Going', icon: <CheckCircle2 className="w-3.5 h-3.5" />, color: 'text-[#2D7A5B]', bg: 'bg-[#E8F5EE] border-[#B8E0CC]' },
+  maybe: { label: 'Maybe', icon: <HelpCircle className="w-3.5 h-3.5" />, color: 'text-[#9A7328]', bg: 'bg-[#FDF3E1] border-[#F0D9A8]' },
+  not_going: { label: 'Not Going', icon: <XCircle className="w-3.5 h-3.5" />, color: 'text-[#A04040]', bg: 'bg-[#FDECEC] border-[#F0C4C4]' },
   pending: { label: 'Pending', icon: <Clock className="w-3.5 h-3.5" />, color: 'text-gray-500', bg: 'bg-gray-50 border-gray-200' },
 };
 
@@ -189,35 +189,40 @@ export default function Home() {
       {/* ═══════ HERO SECTION ═══════ */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/images/hero-travel.png" alt="Travel" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-background" />
+          <img src="/images/hero-travel.png" alt="Travel" className="w-full h-full object-cover scale-105" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#2A1F14]/60 via-[#3D2E1F]/40 to-[#FAF7F2]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#2A1F14]/30 to-transparent" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20 sm:pt-12 sm:pb-28">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-2xl">🏴‍☠️</span>
-              <span className="text-white/80 text-sm font-medium">Your Travel Crew Hub</span>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-24 sm:pt-14 sm:pb-32">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center text-xl border border-white/10">
+                🏴‍☠️
+              </div>
+              <span className="text-white/60 text-xs font-semibold tracking-[0.15em] uppercase">Straw Hats Crew</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 tracking-tight">
-              Straw Hats <span className="text-amber-400">Crew</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-3 tracking-tight leading-[1.1]">
+              Adventures with<br />the <span className="bg-gradient-to-r from-[#F2D6A0] to-[#D4896A] bg-clip-text text-transparent">Crew</span>
             </h1>
-            <p className="text-white/70 text-lg max-w-xl mb-8">
-              Plan trips together, track who&apos;s coming, split expenses fairly — the Grand Line awaits, crew!
+            <p className="text-white/50 text-base sm:text-lg max-w-lg mb-10 leading-relaxed">
+              Plan voyages, track the crew, split treasure fairly — the Grand Line awaits!
             </p>
 
             {/* Stats Row */}
-            <div className="flex flex-wrap gap-3 sm:gap-4">
+            <div className="flex flex-wrap gap-3">
               {[
                 { icon: <Users className="w-4 h-4" />, label: 'Nakama', value: loading ? '—' : totalMembers },
                 { icon: <Plane className="w-4 h-4" />, label: 'Upcoming', value: loading ? '—' : upcomingTrips.length },
                 { icon: <IndianRupee className="w-4 h-4" />, label: 'Treasure Spent', value: loading ? '—' : formatCurrency(totalSpent) },
                 { icon: <CalendarDays className="w-4 h-4" />, label: 'Next Voyage', value: loading ? '—' : nextTrip ? getRelativeTime(nextTrip.startDate) : 'None' },
               ].map((stat) => (
-                <div key={stat.label} className="glass-dark rounded-xl px-4 py-2.5 flex items-center gap-2.5 text-white">
-                  <span className="text-amber-400">{stat.icon}</span>
+                <div key={stat.label} className="glass-dark rounded-2xl px-4 py-3 flex items-center gap-3 text-white border border-white/10">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F2D6A0]/30 to-[#D4896A]/30 flex items-center justify-center">
+                    <span className="text-[#F2D6A0]">{stat.icon}</span>
+                  </div>
                   <div>
-                    <div className="text-xs text-white/60">{stat.label}</div>
-                    <div className="text-sm font-semibold">{stat.value}</div>
+                    <div className="text-[11px] text-white/45 font-medium uppercase tracking-wider">{stat.label}</div>
+                    <div className="text-sm font-bold">{stat.value}</div>
                   </div>
                 </div>
               ))}
@@ -228,22 +233,22 @@ export default function Home() {
         {/* Tab bar overlaps hero */}
         <div className="absolute bottom-0 left-0 right-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-card/90 backdrop-blur-lg rounded-t-2xl border border-border/50 shadow-lg" style={{ paddingBottom: 1 }}>
+            <div className="glass rounded-t-[1.5rem] border-x border-t border-white/20 shadow-warm-lg" style={{ paddingBottom: 1 }}>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="bg-transparent p-0 h-14 gap-1 w-full justify-start overflow-x-auto scrollbar-hide">
+                <TabsList className="bg-transparent p-0 h-14 gap-1.5 w-full justify-start overflow-x-auto scrollbar-hide">
                   {[
-                    { value: 'dashboard', icon: <Globe className="w-4 h-4" />, label: 'Dashboard' },
-                    { value: 'trips', icon: <MapPin className="w-4 h-4" />, label: 'Trips' },
-                    { value: 'members', icon: <Users className="w-4 h-4" />, label: 'Members' },
-                    { value: 'expenses', icon: <CreditCard className="w-4 h-4" />, label: 'Expenses' },
+                    { value: 'dashboard', icon: <Globe className="w-[18px] h-[18px]" />, label: 'Dashboard' },
+                    { value: 'trips', icon: <MapPin className="w-[18px] h-[18px]" />, label: 'Trips' },
+                    { value: 'members', icon: <Users className="w-[18px] h-[18px]" />, label: 'Members' },
+                    { value: 'expenses', icon: <CreditCard className="w-[18px] h-[18px]" />, label: 'Expenses' },
                   ].map(tab => (
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      className="relative flex items-center gap-2 px-4 sm:px-6 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 text-muted-foreground hover:text-foreground"
+                      className="relative flex items-center gap-2 px-5 sm:px-7 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-warm data-[state=active]:font-semibold transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-muted/60"
                     >
                       {tab.icon}
-                      <span className="hidden sm:inline text-sm font-medium">{tab.label}</span>
+                      <span className="hidden sm:inline text-[13px]">{tab.label}</span>
                     </TabsTrigger>
                   ))}
                 </TabsList>
@@ -254,10 +259,10 @@ export default function Home() {
       </section>
 
       {/* ═══════ CONTENT AREA ═══════ */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {loading ? (
           <div className="space-y-6">
-            <Skeleton className="h-32 w-full rounded-2xl" />
+            <Skeleton className="h-32 w-full rounded-2xl bg-muted/60" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
             </div>
@@ -290,19 +295,19 @@ export default function Home() {
                   {/* Stat Cards */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                      { title: 'Nakama', value: totalMembers, icon: <Users className="w-5 h-5" />, gradient: 'from-orange-500 to-amber-500', iconBg: 'bg-orange-100 text-orange-600' },
-                      { title: 'Upcoming Voyages', value: upcomingTrips.length, icon: <Ship className="w-5 h-5" />, gradient: 'from-teal-500 to-emerald-500', iconBg: 'bg-teal-100 text-teal-600' },
-                      { title: 'Treasure Spent', value: formatCurrency(totalSpent), icon: <TrendingUp className="w-5 h-5" />, gradient: 'from-rose-500 to-pink-500', iconBg: 'bg-rose-100 text-rose-600' },
-                      { title: 'Islands Visited', value: trips.filter(t => t.status === 'completed').length, icon: <MapPin className="w-5 h-5" />, gradient: 'from-violet-500 to-purple-500', iconBg: 'bg-violet-100 text-violet-600' },
+                      { title: 'Nakama', value: totalMembers, icon: <Users className="w-5 h-5" />, iconBg: 'bg-[#BF7B4A]/10 text-[#BF7B4A]' },
+                      { title: 'Upcoming Voyages', value: upcomingTrips.length, icon: <Ship className="w-5 h-5" />, iconBg: 'bg-[#2A9E8F]/10 text-[#2A9E8F]' },
+                      { title: 'Treasure Spent', value: formatCurrency(totalSpent), icon: <TrendingUp className="w-5 h-5" />, iconBg: 'bg-[#D4896A]/10 text-[#D4896A]' },
+                      { title: 'Islands Visited', value: trips.filter(t => t.status === 'completed').length, icon: <MapPin className="w-5 h-5" />, iconBg: 'bg-[#C4A265]/10 text-[#C4A265]' },
                     ].map(card => (
-                      <Card key={card.title} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+                      <Card key={card.title} className="border-0 shadow-warm-sm hover:shadow-warm transition-all duration-300 bg-card">
                         <CardContent className="p-5">
                           <div className="flex items-start justify-between">
                             <div>
-                              <p className="text-sm text-muted-foreground">{card.title}</p>
-                              <p className="text-2xl font-bold mt-1">{card.value}</p>
+                              <p className="text-xs text-muted-foreground font-medium">{card.title}</p>
+                              <p className="text-2xl font-bold mt-1.5 tracking-tight">{card.value}</p>
                             </div>
-                            <div className={`p-2.5 rounded-xl ${card.iconBg}`}>{card.icon}</div>
+                            <div className={`p-2.5 rounded-2xl ${card.iconBg}`}>{card.icon}</div>
                           </div>
                         </CardContent>
                       </Card>
@@ -312,13 +317,13 @@ export default function Home() {
                   {/* Next Trip Highlight */}
                   {nextTrip && (
                     <motion.div whileHover={{ scale: 1.005 }} transition={{ duration: 0.2 }}>
-                      <Card className="border-0 shadow-sm overflow-hidden cursor-pointer" onClick={() => openTripDetail(nextTrip)}>
+                      <Card className="border-0 shadow-warm overflow-hidden cursor-pointer hover:shadow-warm-lg transition-all duration-500" onClick={() => openTripDetail(nextTrip)}>
                         <div className="flex flex-col sm:flex-row">
                           <div className="sm:w-64 h-40 sm:h-auto relative flex-shrink-0">
                             <img src={nextTrip.coverImage || '/images/hero-travel.png'} alt={nextTrip.title} className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/80 hidden sm:block" />
                             <div className="absolute top-3 left-3">
-                              <Badge className="bg-amber-500 text-white border-0 gap-1">
+                              <Badge className="bg-[#BF7B4A] text-white border-0 gap-1 shadow-sm">
                                 {nextTrip.type === 'movie' ? <Film className="w-3 h-3" /> : <Plane className="w-3 h-3" />}
                                 Next Trip
                               </Badge>
@@ -348,7 +353,7 @@ export default function Home() {
                                 {nextTrip.tripMembers.filter(tm => tm.status === 'going').length} going · {nextTrip.tripMembers.filter(tm => tm.status === 'maybe').length} maybe
                               </span>
                             </div>
-                            <div className="flex items-center gap-2 mt-3 text-primary text-sm font-medium">
+                            <div className="flex items-center gap-2 mt-3 text-[#BF7B4A] text-sm font-semibold">
                               View Details <ArrowRight className="w-4 h-4" />
                             </div>
                           </div>
@@ -381,9 +386,9 @@ export default function Home() {
                     <h2 className="font-bold text-lg mb-4">The Crew</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {members.slice(0, 8).map(m => (
-                        <Card key={m.id} className="border-0 shadow-sm hover:shadow-md transition-shadow p-4 text-center">
+                        <Card key={m.id} className="shadow-warm-sm hover:shadow-warm transition-all duration-300 p-5 text-center group cursor-default">
                           <MemberAvatar member={m} size="lg" />
-                          <p className="font-medium text-sm mt-2">{m.name}</p>
+                          <p className="font-semibold text-sm mt-2.5">{m.name}</p>
                           <p className="text-xs text-muted-foreground mt-0.5">{trips.filter(t => t.tripMembers.some(tm => tm.memberId === m.id && tm.status === 'going')).length} trips</p>
                         </Card>
                       ))}
@@ -428,8 +433,8 @@ export default function Home() {
       </main>
 
       {/* ═══════ FOOTER ═══════ */}
-      <footer className="mt-auto border-t bg-card/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-muted-foreground">
+      <footer className="mt-auto border-t border-border/50 bg-[#F5F0E9]/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-[#8A7B6C]">
           <span className="flex items-center gap-1.5">🏴‍☠️ Straw Hats Crew — To the Grand Line and beyond!</span>
           <Button variant="ghost" size="sm" onClick={handleSeed} disabled={seeding} className="text-xs">
             <RefreshCcw className={`w-3 h-3 mr-1 ${seeding ? 'animate-spin' : ''}`} />
@@ -537,7 +542,7 @@ function TripCard({ trip, members, onClick }: { trip: Trip; members: Member[]; o
 
   return (
     <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
-      <Card className="border-0 shadow-sm overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 group" onClick={onClick}>
+      <Card className="border-0 shadow-warm-sm overflow-hidden cursor-pointer hover:shadow-warm-lg transition-all duration-500 group bg-card rounded-2xl" onClick={onClick}>
         <div className="relative h-40 overflow-hidden">
           <img
             src={trip.coverImage || '/images/hero-travel.png'}
@@ -649,7 +654,7 @@ function MembersView({ members, trips, onAddMember, onDeleteMember }: { members:
               return sum + (tm?.paidAmount || 0);
             }, 0);
             return (
-              <Card key={m.id} className="border-0 shadow-sm hover:shadow-md transition-all duration-200">
+              <Card key={m.id} className="border-0 shadow-warm-sm hover:shadow-warm transition-all duration-300">
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -725,20 +730,20 @@ function ExpensesView({ trips, members, onAddExpense }: { trips: Trip[]; members
         <>
           {/* Summary */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-warm-sm">
               <CardContent className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">Total Spent</p>
                 <p className="text-2xl font-bold mt-1">{formatCurrency(totalExpenses)}</p>
                 {selectedTrip && <p className="text-xs text-muted-foreground mt-1">Budget: {formatCurrency(selectedTrip.totalBudget)}</p>}
               </CardContent>
             </Card>
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-warm-sm">
               <CardContent className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">Expenses</p>
                 <p className="text-2xl font-bold mt-1">{expenses.length}</p>
               </CardContent>
             </Card>
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-warm-sm">
               <CardContent className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">Going Members</p>
                 <p className="text-2xl font-bold mt-1">{selectedTrip?.tripMembers.filter(tm => tm.status === 'going').length || 0}</p>
@@ -748,7 +753,7 @@ function ExpensesView({ trips, members, onAddExpense }: { trips: Trip[]; members
 
           {/* Split Summary */}
           {splits.length > 0 && (
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-warm-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2"><Target className="w-4 h-4 text-primary" /> Who Owes Whom</CardTitle>
                 <CardDescription>Fair split calculation for {selectedTrip?.tripMembers.filter(tm => tm.status === 'going').length} members</CardDescription>
@@ -773,7 +778,7 @@ function ExpensesView({ trips, members, onAddExpense }: { trips: Trip[]; members
           {expenses.length === 0 ? (
             <EmptyState icon={<Wallet className="w-8 h-8" />} title="No expenses yet" description="Start logging your voyage expenses." action={<Button onClick={() => onAddExpense(selectedTripId)} className="gap-2"><Plus className="w-4 h-4" /> Add Expense</Button>} />
           ) : (
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-warm-sm">
               <CardContent className="p-0">
                 <div className="divide-y max-h-96 overflow-y-auto scrollbar-thin">
                   {expenses.map(exp => (
