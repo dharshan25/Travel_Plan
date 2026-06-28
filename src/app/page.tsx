@@ -7,7 +7,8 @@ import {
   Clock, CheckCircle2, HelpCircle, XCircle, ChevronRight, ArrowRight,
   IndianRupee, Mountain, Utensils, Bus, Ticket, ShoppingBag, MoreHorizontal,
   Trash2, Edit3, Eye, X, Sparkles, Globe, Camera, Map, Wallet, UserPlus,
-  RefreshCcw, CalendarDays, Target, ArrowUpRight, ArrowDownLeft
+  RefreshCcw, CalendarDays, Target, ArrowUpRight, ArrowDownLeft, Compass,
+  Anchor, Ship
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -151,7 +152,7 @@ export default function Home() {
     try {
       await seedData();
       await fetchData();
-      toast({ title: 'Sample data loaded!', description: 'Your travel group is ready to go ✈️' });
+      toast({ title: 'Crew assembled! 🏴‍☠️', description: 'The Straw Hats are ready to set sail!' });
     } catch (e: any) {
       toast({ title: 'Seed failed', description: e.message, variant: 'destructive' });
     } finally {
@@ -194,23 +195,23 @@ export default function Home() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20 sm:pt-12 sm:pb-28">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-5 h-5 text-amber-400" />
+              <span className="text-2xl">🏴‍☠️</span>
               <span className="text-white/80 text-sm font-medium">Your Travel Crew Hub</span>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 tracking-tight">
-              Wanderlust <span className="text-amber-400">Crew</span>
+              Straw Hats <span className="text-amber-400">Crew</span>
             </h1>
             <p className="text-white/70 text-lg max-w-xl mb-8">
-              Plan trips together, track who&apos;s coming, split expenses fairly, and make every adventure unforgettable.
+              Plan trips together, track who&apos;s coming, split expenses fairly — the Grand Line awaits, crew!
             </p>
 
             {/* Stats Row */}
             <div className="flex flex-wrap gap-3 sm:gap-4">
               {[
-                { icon: <Users className="w-4 h-4" />, label: 'Members', value: loading ? '—' : totalMembers },
+                { icon: <Users className="w-4 h-4" />, label: 'Nakama', value: loading ? '—' : totalMembers },
                 { icon: <Plane className="w-4 h-4" />, label: 'Upcoming', value: loading ? '—' : upcomingTrips.length },
-                { icon: <IndianRupee className="w-4 h-4" />, label: 'Total Spent', value: loading ? '—' : formatCurrency(totalSpent) },
-                { icon: <CalendarDays className="w-4 h-4" />, label: 'Next Trip', value: loading ? '—' : nextTrip ? getRelativeTime(nextTrip.startDate) : 'None' },
+                { icon: <IndianRupee className="w-4 h-4" />, label: 'Treasure Spent', value: loading ? '—' : formatCurrency(totalSpent) },
+                { icon: <CalendarDays className="w-4 h-4" />, label: 'Next Voyage', value: loading ? '—' : nextTrip ? getRelativeTime(nextTrip.startDate) : 'None' },
               ].map((stat) => (
                 <div key={stat.label} className="glass-dark rounded-xl px-4 py-2.5 flex items-center gap-2.5 text-white">
                   <span className="text-amber-400">{stat.icon}</span>
@@ -264,9 +265,9 @@ export default function Home() {
           </div>
         ) : members.length === 0 && trips.length === 0 ? (
           <EmptyState
-            icon={<Plane className="w-8 h-8" />}
-            title="Start Your Adventure"
-            description="Your travel group is empty. Load sample data to see how everything works, or add your first member to get started."
+            icon={<Compass className="w-8 h-8" />}
+            title="Set Sail, Captain!"
+            description="Your crew's log book is empty. Load sample data to see how it works, or add your first nakama to set sail!"
             action={
               <div className="flex gap-3">
                 <Button onClick={handleSeed} disabled={seeding} className="gap-2">
@@ -289,10 +290,10 @@ export default function Home() {
                   {/* Stat Cards */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                      { title: 'Crew Members', value: totalMembers, icon: <Users className="w-5 h-5" />, gradient: 'from-orange-500 to-amber-500', iconBg: 'bg-orange-100 text-orange-600' },
-                      { title: 'Upcoming Trips', value: upcomingTrips.length, icon: <Plane className="w-5 h-5" />, gradient: 'from-teal-500 to-emerald-500', iconBg: 'bg-teal-100 text-teal-600' },
-                      { title: 'Total Expenses', value: formatCurrency(totalSpent), icon: <TrendingUp className="w-5 h-5" />, gradient: 'from-rose-500 to-pink-500', iconBg: 'bg-rose-100 text-rose-600' },
-                      { title: 'Places Visited', value: trips.filter(t => t.status === 'completed').length, icon: <MapPin className="w-5 h-5" />, gradient: 'from-violet-500 to-purple-500', iconBg: 'bg-violet-100 text-violet-600' },
+                      { title: 'Nakama', value: totalMembers, icon: <Users className="w-5 h-5" />, gradient: 'from-orange-500 to-amber-500', iconBg: 'bg-orange-100 text-orange-600' },
+                      { title: 'Upcoming Voyages', value: upcomingTrips.length, icon: <Ship className="w-5 h-5" />, gradient: 'from-teal-500 to-emerald-500', iconBg: 'bg-teal-100 text-teal-600' },
+                      { title: 'Treasure Spent', value: formatCurrency(totalSpent), icon: <TrendingUp className="w-5 h-5" />, gradient: 'from-rose-500 to-pink-500', iconBg: 'bg-rose-100 text-rose-600' },
+                      { title: 'Islands Visited', value: trips.filter(t => t.status === 'completed').length, icon: <MapPin className="w-5 h-5" />, gradient: 'from-violet-500 to-purple-500', iconBg: 'bg-violet-100 text-violet-600' },
                     ].map(card => (
                       <Card key={card.title} className="border-0 shadow-sm hover:shadow-md transition-shadow">
                         <CardContent className="p-5">
@@ -359,13 +360,13 @@ export default function Home() {
                   {/* All Trips Quick View */}
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className="font-bold text-lg">All Trips</h2>
+                      <h2 className="font-bold text-lg">All Voyages</h2>
                       <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setActiveTab('trips')}>
-                        View All <ChevronRight className="w-4 h-4" />
+                        View All Voyages <ChevronRight className="w-4 h-4" />
                       </Button>
                     </div>
                     {trips.length === 0 ? (
-                      <EmptyState icon={<Plane className="w-8 h-8" />} title="No trips yet" description="Create your first trip to get started!" action={<Button onClick={() => setShowCreateTrip(true)} className="gap-2"><Plus className="w-4 h-4" /> Create Trip</Button>} />
+                      <EmptyState icon={<Compass className="w-8 h-8" />} title="No voyages yet" description="Plan your first adventure, captain!" action={<Button onClick={() => setShowCreateTrip(true)} className="gap-2"><Plus className="w-4 h-4" /> Create Trip</Button>} />
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {trips.slice(0, 3).map(trip => (
@@ -377,7 +378,7 @@ export default function Home() {
 
                   {/* Recent Crew Activity */}
                   <div>
-                    <h2 className="font-bold text-lg mb-4">Crew Members</h2>
+                    <h2 className="font-bold text-lg mb-4">The Crew</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {members.slice(0, 8).map(m => (
                         <Card key={m.id} className="border-0 shadow-sm hover:shadow-md transition-shadow p-4 text-center">
@@ -429,7 +430,7 @@ export default function Home() {
       {/* ═══════ FOOTER ═══════ */}
       <footer className="mt-auto border-t bg-card/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1.5">✈️ Wanderlust Crew — Making trips easy together</span>
+          <span className="flex items-center gap-1.5">🏴‍☠️ Straw Hats Crew — To the Grand Line and beyond!</span>
           <Button variant="ghost" size="sm" onClick={handleSeed} disabled={seeding} className="text-xs">
             <RefreshCcw className={`w-3 h-3 mr-1 ${seeding ? 'animate-spin' : ''}`} />
             {seeding ? 'Resetting...' : 'Reset Sample Data'}
@@ -445,7 +446,7 @@ export default function Home() {
           await createTrip(data as any);
           setShowCreateTrip(false);
           fetchData();
-          toast({ title: 'Trip created! 🎉', description: data.title });
+          toast({ title: 'New voyage planned! 🏴‍☠️', description: data.title });
         }}
       />
       <AddMemberDialog
@@ -454,7 +455,7 @@ export default function Home() {
           await createMember(data);
           setShowAddMember(false);
           fetchData();
-          toast({ title: 'Member added! 🙌', description: data.name });
+          toast({ title: 'Nakama recruited! 🏴‍☠️', description: data.name });
         }}
       />
       <AddExpenseDialog
@@ -466,7 +467,7 @@ export default function Home() {
           setShowAddExpense(false);
           if (selectedTrip) openTripDetail(selectedTrip);
           fetchData();
-          toast({ title: 'Expense added 💰' });
+          toast({ title: 'Belly added to the treasure 💰' });
         }}
       />
       <AddItineraryDialog
@@ -600,7 +601,7 @@ function TripsView({ trips, members, onCreateTrip, onTripClick }: { trips: Trip[
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h2 className="font-bold text-xl">All Trips</h2>
+          <h2 className="font-bold text-xl">All Voyages</h2>
           <div className="flex bg-muted rounded-lg p-0.5">
             {['all', 'travel', 'movie'].map(f => (
               <button key={f} onClick={() => setFilter(f)}
@@ -611,12 +612,12 @@ function TripsView({ trips, members, onCreateTrip, onTripClick }: { trips: Trip[
           </div>
         </div>
         <Button onClick={onCreateTrip} className="gap-2 shadow-sm">
-          <Plus className="w-4 h-4" /> New Trip
+          <Plus className="w-4 h-4" /> New Voyage
         </Button>
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState icon={<MapPin className="w-8 h-8" />} title="No trips found" description={filter !== 'all' ? `No ${filter} trips yet. Create one!` : 'Start planning your first adventure!'} action={<Button onClick={onCreateTrip} className="gap-2"><Plus className="w-4 h-4" /> Create Trip</Button>} />
+        <EmptyState icon={<Anchor className="w-8 h-8" />} title="No voyages found" description={filter !== 'all' ? `No ${filter} voyages yet. Plan one!` : 'Time to plan your first adventure, captain!'} action={<Button onClick={onCreateTrip} className="gap-2"><Plus className="w-4 h-4" /> Create Trip</Button>} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map(trip => <TripCard key={trip.id} trip={trip} members={members} onClick={() => onTripClick(trip)} />)}
@@ -638,7 +639,7 @@ function MembersView({ members, trips, onAddMember, onDeleteMember }: { members:
         <Button onClick={onAddMember} className="gap-2 shadow-sm"><UserPlus className="w-4 h-4" /> Add Member</Button>
       </div>
       {members.length === 0 ? (
-        <EmptyState icon={<Users className="w-8 h-8" />} title="No members yet" description="Add your travel buddies to get started!" action={<Button onClick={onAddMember} className="gap-2"><UserPlus className="w-4 h-4" /> Add Member</Button>} />
+        <EmptyState icon={<Users className="w-8 h-8" />} title="No nakama yet" description="Recruit your crew members to set sail!" action={<Button onClick={onAddMember} className="gap-2"><UserPlus className="w-4 h-4" /> Add Member</Button>} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {members.map(m => {
@@ -770,7 +771,7 @@ function ExpensesView({ trips, members, onAddExpense }: { trips: Trip[]; members
 
           {/* Expense List */}
           {expenses.length === 0 ? (
-            <EmptyState icon={<Wallet className="w-8 h-8" />} title="No expenses yet" description="Start tracking your trip expenses." action={<Button onClick={() => onAddExpense(selectedTripId)} className="gap-2"><Plus className="w-4 h-4" /> Add Expense</Button>} />
+            <EmptyState icon={<Wallet className="w-8 h-8" />} title="No expenses yet" description="Start logging your voyage expenses." action={<Button onClick={() => onAddExpense(selectedTripId)} className="gap-2"><Plus className="w-4 h-4" /> Add Expense</Button>} />
           ) : (
             <Card className="border-0 shadow-sm">
               <CardContent className="p-0">
@@ -816,8 +817,8 @@ function CreateTripDialog({ open, onClose, members, onSubmit }: { open: boolean;
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create New Trip ✈️</DialogTitle>
-          <DialogDescription>Plan your next adventure with the crew</DialogDescription>
+          <DialogTitle>Plan New Voyage 🗺️</DialogTitle>
+          <DialogDescription>The next island awaits, captain!</DialogDescription>
         </DialogHeader>
 
         {/* Step indicator */}
@@ -890,7 +891,7 @@ function CreateTripDialog({ open, onClose, members, onSubmit }: { open: boolean;
 
               <div className="flex justify-between">
                 <Button variant="outline" onClick={() => setStep(1)}>← Back</Button>
-                <Button onClick={handleSubmit} disabled={!form.title || !form.startDate || !form.endDate}>Create Trip 🎉</Button>
+                <Button onClick={handleSubmit} disabled={!form.title || !form.startDate || !form.endDate}>Set Sail! 🏴‍☠️</Button>
               </div>
             </motion.div>
           )}
@@ -907,8 +908,8 @@ function AddMemberDialog({ open, onClose, onSubmit }: { open: boolean; onClose: 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Crew Member 🙌</DialogTitle>
-          <DialogDescription>Add a new member to your travel group</DialogDescription>
+          <DialogTitle>Recruit Nakama 🏴‍☠️</DialogTitle>
+          <DialogDescription>Add a new member to the Straw Hats crew</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
@@ -1216,7 +1217,7 @@ function TripDetailDialog({
                       <Button size="sm" onClick={onAddItinerary} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add</Button>
                     </div>
                     {Object.keys(itineraryByDay).length === 0 ? (
-                      <EmptyState icon={<Calendar className="w-8 h-8" />} title="No itinerary yet" description="Plan your day-by-day activities" action={<Button size="sm" onClick={onAddItinerary} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add Activity</Button>} />
+                      <EmptyState icon={<Ship className="w-8 h-8" />} title="No itinerary yet" description="Chart the course for each day of your voyage" action={<Button size="sm" onClick={onAddItinerary} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add Activity</Button>} />
                     ) : (
                       Object.entries(itineraryByDay).sort(([a], [b]) => Number(a) - Number(b)).map(([day, items]) => (
                         <div key={day}>

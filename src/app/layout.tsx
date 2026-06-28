@@ -14,14 +14,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wanderlust Crew — Travel Group Hub",
+  title: "Straw Hats Crew — Travel Group Hub",
   description: "Plan trips, track expenses, manage RSVPs, and make every adventure unforgettable with your travel crew.",
   icons: {
     icon: "/logo.svg",
   },
   openGraph: {
-    title: "Wanderlust Crew",
-    description: "Your travel group's command center",
+    title: "Straw Hats Crew",
+    description: "The Grand Line awaits — your crew's command center",
     type: "website",
   },
 };
