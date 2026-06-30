@@ -8,7 +8,7 @@ import {
   IndianRupee, Mountain, Utensils, Bus, Ticket, ShoppingBag, MoreHorizontal,
   Trash2, Edit3, Eye, X, Sparkles, Globe, Camera, Map, Wallet, UserPlus,
   RefreshCcw, CalendarDays, Target, ArrowUpRight, ArrowDownLeft, Compass,
-  Anchor, Ship
+  Anchor, Ship, LogOut, Shield, Crown
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -113,6 +113,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
+  const [role, setRole] = useState<'admin' | 'crew' | null>(null);
+  const isAdmin = role === 'admin';
 
   // Data
   const [members, setMembers] = useState<Member[]>([]);
@@ -132,6 +134,20 @@ export default function Home() {
   const [tripItinerary, setTripItinerary] = useState<ItineraryItem[]>([]);
   const [detailLoading, setDetailLoading] = useState(false);
 
+  const fetchRole = useCallback(async () => {
+    try {
+      const res = await fetch('/api/auth/me');
+      if (res.ok) {
+        const data = await res.json();
+        setRole(data.role);
+      } else {
+        window.location.href = '/login';
+      }
+    } catch {
+      window.location.href = '/login';
+    }
+  }, []);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
@@ -145,7 +161,14 @@ export default function Home() {
     }
   }, [toast]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchRole().then(() => fetchData());
+  }, [fetchRole, fetchData]);
+
+  const handleLogout = async () => {
+    await fetch('/api/auth', { method: 'DELETE' });
+    window.location.href = '/login';
+  };
 
   const handleSeed = async () => {
     setSeeding(true);
@@ -200,6 +223,13 @@ export default function Home() {
                 🏴‍☠️
               </div>
               <span className="text-white/60 text-xs font-semibold tracking-[0.15em] uppercase">Straw Hats Crew</span>
+              {/* Role Badge */}
+              {role && (
+                <Badge className={`ml-2 gap-1 border-0 ${isAdmin ? 'bg-[#F2D6A0]/30 text-[#F2D6A0]' : 'bg-white/15 text-white/70'}`}>
+                  {isAdmin ? <Crown className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
+                  {isAdmin ? 'Captain' : 'Crew'}
+                </Badge>
+              )}
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-3 tracking-tight leading-[1.1]">
               Adventures with<br />the <span className="bg-gradient-to-r from-[#F2D6A0] to-[#D4896A] bg-clip-text text-transparent">Crew</span>
@@ -274,15 +304,17 @@ export default function Home() {
             title="Set Sail, Captain!"
             description="Your crew's log book is empty. Load sample data to see how it works, or add your first nakama to set sail!"
             action={
-              <div className="flex gap-3">
-                <Button onClick={handleSeed} disabled={seeding} className="gap-2">
-                  <RefreshCcw className={`w-4 h-4 ${seeding ? 'animate-spin' : ''}`} />
-                  {seeding ? 'Loading...' : 'Load Sample Data'}
-                </Button>
-                <Button variant="outline" onClick={() => setShowAddMember(true)} className="gap-2">
-                  <UserPlus className="w-4 h-4" /> Add Member
-                </Button>
-              </div>
+              isAdmin ? (
+                <div className="flex gap-3">
+                  <Button onClick={handleSeed} disabled={seeding} className="gap-2">
+                    <RefreshCcw className={`w-4 h-4 ${seeding ? 'animate-spin' : ''}`} />
+                    {seeding ? 'Loading...' : 'Load Sample Data'}
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowAddMember(true)} className="gap-2">
+                    <UserPlus className="w-4 h-4" /> Add Member
+                  </Button>
+                </div>
+              ) : undefined
             }
           />
         ) : (
@@ -371,7 +403,12 @@ export default function Home() {
                       </Button>
                     </div>
                     {trips.length === 0 ? (
-                      <EmptyState icon={<Compass className="w-8 h-8" />} title="No voyages yet" description="Plan your first adventure, captain!" action={<Button onClick={() => setShowCreateTrip(true)} className="gap-2"><Plus className="w-4 h-4" /> Create Trip</Button>} />
+                      <EmptyState
+                        icon={<Compass className="w-8 h-8" />}
+                        title="No voyages yet"
+                        description="Plan your first adventure, captain!"
+                        action={isAdmin ? <Button onClick={() => setShowCreateTrip(true)} className="gap-2"><Plus className="w-4 h-4" /> Create Trip</Button> : undefined}
+                      />
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {trips.slice(0, 3).map(trip => (
@@ -400,7 +437,7 @@ export default function Home() {
               {/* ═══════ TRIPS TAB ═══════ */}
               {activeTab === 'trips' && (
                 <TripsView
-                  trips={trips} members={members}
+                  trips={trips} members={members} isAdmin={isAdmin}
                   onCreateTrip={() => setShowCreateTrip(true)}
                   onTripClick={openTripDetail}
                 />
@@ -409,7 +446,7 @@ export default function Home() {
               {/* ═══════ MEMBERS TAB ═══════ */}
               {activeTab === 'members' && (
                 <MembersView
-                  members={members} trips={trips}
+                  members={members} trips={trips} isAdmin={isAdmin}
                   onAddMember={() => setShowAddMember(true)}
                   onDeleteMember={async (id) => {
                     await deleteMember(id);
@@ -422,7 +459,7 @@ export default function Home() {
               {/* ═══════ EXPENSES TAB ═══════ */}
               {activeTab === 'expenses' && (
                 <ExpensesView
-                  trips={trips} members={members}
+                  trips={trips} members={members} isAdmin={isAdmin}
                   onAddExpense={(tripId) => { setSelectedTrip(trips.find(t => t.id === tripId) || null); setShowAddExpense(true); }}
                 />
               )}
@@ -435,57 +472,77 @@ export default function Home() {
       {/* ═══════ FOOTER ═══════ */}
       <footer className="mt-auto border-t border-border/50 bg-[#F5F0E9]/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-[#8A7B6C]">
-          <span className="flex items-center gap-1.5">🏴‍☠️ Straw Hats Crew — To the Grand Line and beyond!</span>
-          <Button variant="ghost" size="sm" onClick={handleSeed} disabled={seeding} className="text-xs">
-            <RefreshCcw className={`w-3 h-3 mr-1 ${seeding ? 'animate-spin' : ''}`} />
-            {seeding ? 'Resetting...' : 'Reset Sample Data'}
-          </Button>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1.5">🏴‍☠️ Straw Hats Crew</span>
+            {role && (
+              <Badge variant="outline" className={`gap-1 text-[10px] px-2 ${isAdmin ? 'border-[#BF7B4A]/30 text-[#BF7B4A]' : ''}`}>
+                {isAdmin ? <Crown className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
+                {isAdmin ? 'Captain' : 'Crew Member'}
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Button variant="ghost" size="sm" onClick={handleSeed} disabled={seeding} className="text-xs">
+                <RefreshCcw className={`w-3 h-3 mr-1 ${seeding ? 'animate-spin' : ''}`} />
+                {seeding ? 'Resetting...' : 'Reset Data'}
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-xs text-muted-foreground hover:text-destructive">
+              <LogOut className="w-3 h-3 mr-1" />
+              Lock
+            </Button>
+          </div>
         </div>
       </footer>
 
       {/* ═══════ DIALOGS ═══════ */}
-      <CreateTripDialog
-        open={showCreateTrip} onClose={() => setShowCreateTrip(false)}
-        members={members}
-        onSubmit={async (data) => {
-          await createTrip(data as any);
-          setShowCreateTrip(false);
-          fetchData();
-          toast({ title: 'New voyage planned! 🏴‍☠️', description: data.title });
-        }}
-      />
-      <AddMemberDialog
-        open={showAddMember} onClose={() => setShowAddMember(false)}
-        onSubmit={async (data) => {
-          await createMember(data);
-          setShowAddMember(false);
-          fetchData();
-          toast({ title: 'Nakama recruited! 🏴‍☠️', description: data.name });
-        }}
-      />
-      <AddExpenseDialog
-        open={showAddExpense} onClose={() => setShowAddExpense(false)}
-        trip={selectedTrip} members={members}
-        onSubmit={async (data) => {
-          if (!selectedTrip) return;
-          await createExpense({ ...data, tripId: selectedTrip.id });
-          setShowAddExpense(false);
-          if (selectedTrip) openTripDetail(selectedTrip);
-          fetchData();
-          toast({ title: 'Belly added to the treasure 💰' });
-        }}
-      />
-      <AddItineraryDialog
-        open={showAddItinerary} onClose={() => setShowAddItinerary(false)}
-        trip={selectedTrip}
-        onSubmit={async (data) => {
-          if (!selectedTrip) return;
-          await createItineraryItem({ ...data, tripId: selectedTrip.id });
-          setShowAddItinerary(false);
-          if (selectedTrip) openTripDetail(selectedTrip);
-          toast({ title: 'Added to itinerary 📋' });
-        }}
-      />
+      {isAdmin && (
+        <>
+          <CreateTripDialog
+            open={showCreateTrip} onClose={() => setShowCreateTrip(false)}
+            members={members}
+            onSubmit={async (data) => {
+              await createTrip(data as any);
+              setShowCreateTrip(false);
+              fetchData();
+              toast({ title: 'New voyage planned! 🏴‍☠️', description: data.title });
+            }}
+          />
+          <AddMemberDialog
+            open={showAddMember} onClose={() => setShowAddMember(false)}
+            onSubmit={async (data) => {
+              await createMember(data);
+              setShowAddMember(false);
+              fetchData();
+              toast({ title: 'Nakama recruited! 🏴‍☠️', description: data.name });
+            }}
+          />
+          <AddExpenseDialog
+            open={showAddExpense} onClose={() => setShowAddExpense(false)}
+            trip={selectedTrip} members={members}
+            onSubmit={async (data) => {
+              if (!selectedTrip) return;
+              await createExpense({ ...data, tripId: selectedTrip.id });
+              setShowAddExpense(false);
+              if (selectedTrip) openTripDetail(selectedTrip);
+              fetchData();
+              toast({ title: 'Belly added to the treasure 💰' });
+            }}
+          />
+          <AddItineraryDialog
+            open={showAddItinerary} onClose={() => setShowAddItinerary(false)}
+            trip={selectedTrip}
+            onSubmit={async (data) => {
+              if (!selectedTrip) return;
+              await createItineraryItem({ ...data, tripId: selectedTrip.id });
+              setShowAddItinerary(false);
+              if (selectedTrip) openTripDetail(selectedTrip);
+              toast({ title: 'Added to itinerary 📋' });
+            }}
+          />
+        </>
+      )}
       <RSVPDialog
         open={showRSVPDialog} onClose={() => setShowRSVPDialog(false)}
         trip={selectedTrip} members={members}
@@ -505,6 +562,7 @@ export default function Home() {
         itinerary={tripItinerary}
         members={members}
         loading={detailLoading}
+        isAdmin={isAdmin}
         open={!!selectedTrip}
         onClose={() => { setSelectedTrip(null); setTripExpenses([]); setTripItinerary([]); }}
         onAddExpense={() => setShowAddExpense(true)}
@@ -598,7 +656,7 @@ function TripCard({ trip, members, onClick }: { trip: Trip; members: Member[]; o
    TRIPS VIEW
    ════════════════════════════════════════════════════════════ */
 
-function TripsView({ trips, members, onCreateTrip, onTripClick }: { trips: Trip[]; members: Member[]; onCreateTrip: () => void; onTripClick: (t: Trip) => void }) {
+function TripsView({ trips, members, isAdmin, onCreateTrip, onTripClick }: { trips: Trip[]; members: Member[]; isAdmin: boolean; onCreateTrip: () => void; onTripClick: (t: Trip) => void }) {
   const [filter, setFilter] = useState('all');
   const filtered = filter === 'all' ? trips : trips.filter(t => t.type === filter);
 
@@ -616,13 +674,20 @@ function TripsView({ trips, members, onCreateTrip, onTripClick }: { trips: Trip[
             ))}
           </div>
         </div>
-        <Button onClick={onCreateTrip} className="gap-2 shadow-sm">
-          <Plus className="w-4 h-4" /> New Voyage
-        </Button>
+        {isAdmin && (
+          <Button onClick={onCreateTrip} className="gap-2 shadow-sm">
+            <Plus className="w-4 h-4" /> New Voyage
+          </Button>
+        )}
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState icon={<Anchor className="w-8 h-8" />} title="No voyages found" description={filter !== 'all' ? `No ${filter} voyages yet. Plan one!` : 'Time to plan your first adventure, captain!'} action={<Button onClick={onCreateTrip} className="gap-2"><Plus className="w-4 h-4" /> Create Trip</Button>} />
+        <EmptyState
+          icon={<Anchor className="w-8 h-8" />}
+          title="No voyages found"
+          description={filter !== 'all' ? `No ${filter} voyages yet. Plan one!` : 'Time to plan your first adventure, captain!'}
+          action={isAdmin ? <Button onClick={onCreateTrip} className="gap-2"><Plus className="w-4 h-4" /> Create Trip</Button> : undefined}
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map(trip => <TripCard key={trip.id} trip={trip} members={members} onClick={() => onTripClick(trip)} />)}
@@ -636,15 +701,17 @@ function TripsView({ trips, members, onCreateTrip, onTripClick }: { trips: Trip[
    MEMBERS VIEW
    ════════════════════════════════════════════════════════════ */
 
-function MembersView({ members, trips, onAddMember, onDeleteMember }: { members: Member[]; trips: Trip[]; onAddMember: () => void; onDeleteMember: (id: string) => void }) {
+function MembersView({ members, trips, isAdmin, onAddMember, onDeleteMember }: { members: Member[]; trips: Trip[]; isAdmin: boolean; onAddMember: () => void; onDeleteMember: (id: string) => void }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-bold text-xl">Crew Members ({members.length})</h2>
-        <Button onClick={onAddMember} className="gap-2 shadow-sm"><UserPlus className="w-4 h-4" /> Add Member</Button>
+        {isAdmin && (
+          <Button onClick={onAddMember} className="gap-2 shadow-sm"><UserPlus className="w-4 h-4" /> Add Member</Button>
+        )}
       </div>
       {members.length === 0 ? (
-        <EmptyState icon={<Users className="w-8 h-8" />} title="No nakama yet" description="Recruit your crew members to set sail!" action={<Button onClick={onAddMember} className="gap-2"><UserPlus className="w-4 h-4" /> Add Member</Button>} />
+        <EmptyState icon={<Users className="w-8 h-8" />} title="No nakama yet" description="Recruit your crew members to set sail!" action={isAdmin ? <Button onClick={onAddMember} className="gap-2"><UserPlus className="w-4 h-4" /> Add Member</Button> : undefined} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {members.map(m => {
@@ -664,9 +731,11 @@ function MembersView({ members, trips, onAddMember, onDeleteMember }: { members:
                         {m.phone && <p className="text-xs text-muted-foreground">{m.phone}</p>}
                       </div>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => onDeleteMember(m.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    {isAdmin && (
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => onDeleteMember(m.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
                   <Separator className="my-3" />
                   <div className="grid grid-cols-2 gap-2 text-sm">
@@ -693,7 +762,7 @@ function MembersView({ members, trips, onAddMember, onDeleteMember }: { members:
    EXPENSES VIEW
    ════════════════════════════════════════════════════════════ */
 
-function ExpensesView({ trips, members, onAddExpense }: { trips: Trip[]; members: Member[]; onAddExpense: (tripId: string) => void }) {
+function ExpensesView({ trips, members, isAdmin, onAddExpense }: { trips: Trip[]; members: Member[]; isAdmin: boolean; onAddExpense: (tripId: string) => void }) {
   const [selectedTripId, setSelectedTripId] = useState(trips[0]?.id || '');
   const [expenses, setExpenses] = useState<ExpenseWithMember[]>([]);
 
@@ -721,7 +790,9 @@ function ExpensesView({ trips, members, onAddExpense }: { trips: Trip[]; members
             </SelectContent>
           </Select>
         </div>
-        {selectedTripId && <Button onClick={() => onAddExpense(selectedTripId)} className="gap-2 shadow-sm"><Plus className="w-4 h-4" /> Add Expense</Button>}
+        {isAdmin && selectedTripId && (
+          <Button onClick={() => onAddExpense(selectedTripId)} className="gap-2 shadow-sm"><Plus className="w-4 h-4" /> Add Expense</Button>
+        )}
       </div>
 
       {!selectedTripId ? (
@@ -776,7 +847,7 @@ function ExpensesView({ trips, members, onAddExpense }: { trips: Trip[]; members
 
           {/* Expense List */}
           {expenses.length === 0 ? (
-            <EmptyState icon={<Wallet className="w-8 h-8" />} title="No expenses yet" description="Start logging your voyage expenses." action={<Button onClick={() => onAddExpense(selectedTripId)} className="gap-2"><Plus className="w-4 h-4" /> Add Expense</Button>} />
+            <EmptyState icon={<Wallet className="w-8 h-8" />} title="No expenses yet" description="Start logging your voyage expenses." action={isAdmin ? <Button onClick={() => onAddExpense(selectedTripId)} className="gap-2"><Plus className="w-4 h-4" /> Add Expense</Button> : undefined} />
           ) : (
             <Card className="border-0 shadow-warm-sm">
               <CardContent className="p-0">
@@ -1081,11 +1152,11 @@ function RSVPDialog({ open, onClose, trip, members, memberId, onSubmit }: { open
    ════════════════════════════════════════════════════════════ */
 
 function TripDetailDialog({
-  trip, expenses, itinerary, members, loading, open, onClose,
+  trip, expenses, itinerary, members, loading, isAdmin, open, onClose,
   onAddExpense, onAddItinerary, onRSVP, onDeleteExpense, onDeleteItinerary, onDeleteTrip
 }: {
   trip: Trip | null; expenses: ExpenseWithMember[]; itinerary: ItineraryItem[];
-  members: Member[]; loading: boolean; open: boolean; onClose: () => void;
+  members: Member[]; loading: boolean; isAdmin: boolean; open: boolean; onClose: () => void;
   onAddExpense: () => void; onAddItinerary: () => void; onRSVP: (id: string) => void;
   onDeleteExpense: (id: string) => void; onDeleteItinerary: (id: string) => void; onDeleteTrip: (id: string) => void;
 }) {
@@ -1206,11 +1277,13 @@ function TripDetailDialog({
                       </div>
                     </div>
 
-                    <div className="flex gap-2 pt-2">
-                      <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onDeleteTrip(trip.id)}>
-                        <Trash2 className="w-3.5 h-3.5" /> Delete Trip
-                      </Button>
-                    </div>
+                    {isAdmin && (
+                      <div className="flex gap-2 pt-2">
+                        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onDeleteTrip(trip.id)}>
+                          <Trash2 className="w-3.5 h-3.5" /> Delete Trip
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1219,10 +1292,17 @@ function TripDetailDialog({
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold">Day-by-Day Plan</h4>
-                      <Button size="sm" onClick={onAddItinerary} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add</Button>
+                      {isAdmin && (
+                        <Button size="sm" onClick={onAddItinerary} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add</Button>
+                      )}
                     </div>
                     {Object.keys(itineraryByDay).length === 0 ? (
-                      <EmptyState icon={<Ship className="w-8 h-8" />} title="No itinerary yet" description="Chart the course for each day of your voyage" action={<Button size="sm" onClick={onAddItinerary} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add Activity</Button>} />
+                      <EmptyState
+                        icon={<Ship className="w-8 h-8" />}
+                        title="No itinerary yet"
+                        description="Chart the course for each day of your voyage"
+                        action={isAdmin ? <Button size="sm" onClick={onAddItinerary} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add Activity</Button> : undefined}
+                      />
                     ) : (
                       Object.entries(itineraryByDay).sort(([a], [b]) => Number(a) - Number(b)).map(([day, items]) => (
                         <div key={day}>
@@ -1243,10 +1323,12 @@ function TripDetailDialog({
                                       {item.location && <p className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="w-3 h-3" />{item.location}</p>}
                                       {item.description && <p className="text-xs text-muted-foreground mt-1">{item.description}</p>}
                                     </div>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                                      onClick={() => onDeleteItinerary(item.id)}>
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </Button>
+                                    {isAdmin && (
+                                      <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                                        onClick={() => onDeleteItinerary(item.id)}>
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </Button>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -1297,7 +1379,9 @@ function TripDetailDialog({
                         <h4 className="font-semibold">Expenses</h4>
                         <p className="text-sm text-muted-foreground">Total: {formatCurrency(totalExpenses)}</p>
                       </div>
-                      <Button size="sm" onClick={onAddExpense} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add</Button>
+                      {isAdmin && (
+                        <Button size="sm" onClick={onAddExpense} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add</Button>
+                      )}
                     </div>
 
                     {splits.length > 0 && (
@@ -1317,7 +1401,7 @@ function TripDetailDialog({
                     )}
 
                     {expenses.length === 0 ? (
-                      <EmptyState icon={<Wallet className="w-8 h-8" />} title="No expenses" description="Track your trip spending here" action={<Button size="sm" onClick={onAddExpense} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add Expense</Button>} />
+                      <EmptyState icon={<Wallet className="w-8 h-8" />} title="No expenses" description="Track your trip spending here" action={isAdmin ? <Button size="sm" onClick={onAddExpense} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Add Expense</Button> : undefined} />
                     ) : (
                       <div className="space-y-2">
                         {expenses.map(exp => (
@@ -1331,10 +1415,12 @@ function TripDetailDialog({
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="font-bold text-sm">{formatCurrency(exp.amount)}</span>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
-                                onClick={() => onDeleteExpense(exp.id)}>
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </Button>
+                              {isAdmin && (
+                                <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                                  onClick={() => onDeleteExpense(exp.id)}>
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              )}
                             </div>
                           </div>
                         ))}
