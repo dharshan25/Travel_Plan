@@ -14,10 +14,12 @@ function createDb(): PrismaClient {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { createClient } = require('@libsql/client');
 
-    const client = createClient({
-      url: tursoUrl,
-      authToken: process.env.TURSO_AUTH_TOKEN,
-    });
+    const clientConfig: { url: string; authToken?: string } = { url: tursoUrl };
+    if (process.env.TURSO_AUTH_TOKEN) {
+      clientConfig.authToken = process.env.TURSO_AUTH_TOKEN;
+    }
+
+    const client = createClient(clientConfig);
 
     const adapter = new PrismaLibSQL(client);
     return new PrismaClient({ adapter });
